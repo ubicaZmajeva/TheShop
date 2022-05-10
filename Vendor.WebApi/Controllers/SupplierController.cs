@@ -5,7 +5,7 @@ using Vendor.WebApi.Services;
 
 namespace Vendor.WebApi.Controllers
 {
-    public class SupplierController : ApiController
+    public class SupplierController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private DatabaseDriver DatabaseDriver;
         private Logger logger;

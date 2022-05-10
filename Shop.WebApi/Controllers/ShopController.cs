@@ -5,7 +5,7 @@ using Shop.WebApi.Services;
 
 namespace Shop.WebApi.Controllers
 {
-    public class ShopController : ApiController
+    public class ShopController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private Db Db;
         private Logger logger;
