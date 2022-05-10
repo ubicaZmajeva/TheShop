@@ -1,23 +1,21 @@
-﻿using System;
-using Vendor.WebApi.Models;
+﻿using Vendor.WebApi.Models;
 
-namespace Vendor.WebApi.Services
+namespace Vendor.WebApi.Services;
+
+public class SupplierService
 {
-    public class SupplierService
+    public bool ArticleInInventory(int id)
     {
-        public bool ArticleInInventory(int id)
-        {
-            return new Random().NextDouble() >= 0.5;
-        }
+        return new Random().NextDouble() >= 0.5;
+    }
 
-        public Article GetArticle(int id)
+    public Article GetArticle(int id)
+    {
+        return new Article()
         {
-            return new Article()
-            {
-                ID = id,
-                Name_of_article = $"Article {id}",
-                ArticlePrice = new Random().Next(100,500)
-            };
-        }
+            ID = id,
+            Name_of_article = $"Article {id}",
+            ArticlePrice = new Random().Next(100,500)
+        };
     }
 }

@@ -1,104 +1,104 @@
-﻿using System;
-using System.Web.Http;
+﻿using Microsoft.AspNetCore.Mvc;
 using Shop.WebApi.Models;
 using Shop.WebApi.Services;
 
-namespace Shop.WebApi.Controllers
+namespace Shop.WebApi.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class ShopController : ControllerBase
 {
-    public class ShopController : Microsoft.AspNetCore.Mvc.ControllerBase
+    private Db Db;
+    private Logger logger;
+
+    private CachedSupplier CachedSupplier;
+    private Warehouse Warehouse;
+    private Dealer1 Dealer1;
+    private Dealer2 Dealer2;
+
+    public ShopController(IConfiguration configuration)
     {
-        private Db Db;
-        private Logger logger;
+        Db = new Db();
+        logger = new Logger();
+        CachedSupplier = new CachedSupplier();
+        Warehouse = new Warehouse();
+        Dealer1 = new Dealer1(configuration.GetValue<string>("Dealer2Url"));
+        Dealer2 = new Dealer2(configuration.GetValue<string>("Dealer2Url"));
+    }
 
-        private CachedSupplier CachedSupplier;
-        private Warehouse Warehouse;
-        private Dealer1 Dealer1;
-        private Dealer2 Dealer2;
-
-        public ShopController()
+    [HttpGet()]
+    public Article GetArtice(int id, int maxExpectedPrice = 200)
+    {
+        Article article = null;
+        Article tmp = null;
+        var articleExists = CachedSupplier.ArticleInInventory(id);
+        if (articleExists)
         {
-            Db = new Db();
-            logger = new Logger();
-            CachedSupplier = new CachedSupplier();
-            Warehouse = new Warehouse();
-            Dealer1 = new Dealer1();
-            Dealer2 = new Dealer2();
-        }
-
-        [HttpGet()]
-        public Article GetArtice(int id, int maxExpectedPrice = 200)
-        {
-            Article article = null;
-            Article tmp = null;
-            var articleExists = CachedSupplier.ArticleInInventory(id);
-            if (articleExists)
+            tmp = CachedSupplier.GetArticle(id);
+            if (maxExpectedPrice < tmp.ArticlePrice)
             {
-                tmp = CachedSupplier.GetArticle(id);
-                if (maxExpectedPrice < tmp.ArticlePrice)
+                articleExists = Warehouse.ArticleInInventory(id);
+                if (articleExists)
                 {
-                    articleExists = Warehouse.ArticleInInventory(id);
-                    if (articleExists)
+                    tmp = Warehouse.GetArticle(id);
+                    if (maxExpectedPrice < tmp.ArticlePrice)
                     {
-                        tmp = Warehouse.GetArticle(id);
-                        if (maxExpectedPrice < tmp.ArticlePrice)
+                        articleExists = Dealer1.ArticleInInventory(id);
+                        if (articleExists)
                         {
-                            articleExists = Dealer1.ArticleInInventory(id);
-                            if (articleExists)
+                            tmp = Dealer1.GetArticle(id);
+                            if (maxExpectedPrice < tmp.ArticlePrice)
                             {
-                                tmp = Dealer1.GetArticle(id);
-                                if (maxExpectedPrice < tmp.ArticlePrice)
+                                articleExists = Dealer2.ArticleInInventory(id);
+                                if (articleExists)
                                 {
-                                    articleExists = Dealer2.ArticleInInventory(id);
-                                    if (articleExists)
+                                    tmp = Dealer2.GetArticle(id);
+                                    if (maxExpectedPrice < tmp.ArticlePrice)
                                     {
-                                        tmp = Dealer2.GetArticle(id);
-                                        if (maxExpectedPrice < tmp.ArticlePrice)
-                                        {
-                                            article = tmp;
-                                        }
+                                        article = tmp;
                                     }
                                 }
                             }
                         }
                     }
-                    if (article != null)
-                    {
-                        CachedSupplier.SetArticle(article);
-                    }
+                }
+                if (article != null)
+                {
+                    CachedSupplier.SetArticle(article);
                 }
             }
-
-            return article;
         }
 
-        [HttpPost]
-        public void BuyArticle(Article article, int buyerId)
+        return article;
+    }
+
+    [HttpPost]
+    public void BuyArticle(Article article, int buyerId)
+    {
+        var id = article.ID;
+        if (article == null)
         {
-            var id = article.ID;
-            if (article == null)
-            {
-                throw new Exception("Could not order article");
-            }
+            throw new Exception("Could not order article");
+        }
 
-            logger.Debug("Trying to sell article with id=" + id);
+        logger.Debug("Trying to sell article with id=" + id);
 
-            article.IsSold = true;
-            article.SoldDate = DateTime.Now;
-            article.BuyerUserId = buyerId;
+        article.IsSold = true;
+        article.SoldDate = DateTime.Now;
+        article.BuyerUserId = buyerId;
 
-            try
-            {
-                Db.Save(article);
-                logger.Info("Article with id " + id + " is sold.");
-            }
-            catch (ArgumentNullException ex)
-            {
-                logger.Error("Could not save article with id " + id);
-                throw new Exception("Could not save article with id");
-            }
-            catch (Exception)
-            {
-            }
+        try
+        {
+            Db.Save(article);
+            logger.Info("Article with id " + id + " is sold.");
+        }
+        catch (ArgumentNullException ex)
+        {
+            logger.Error("Could not save article with id " + id);
+            throw new Exception("Could not save article with id");
+        }
+        catch (Exception)
+        {
         }
     }
 }

@@ -3,37 +3,36 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using Shop.WebApi.Models;
 
-namespace Shop.WebApi.Services
+namespace Shop.WebApi.Services;
+
+public class Dealer1
 {
-    public class Dealer1
+    private readonly string _supplierUrl;
+
+    public Dealer1(string supplierUrl)
     {
-        private readonly string _supplierUrl;
+        _supplierUrl = supplierUrl;
+    }
 
-        public Dealer1()
+    public bool ArticleInInventory(int id)
+    {
+        using (var client = new HttpClient())
         {
-            _supplierUrl = ConfigurationManager.AppSettings["Dealer2Url"];
+            var response = client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{_supplierUrl}/ArticleInInventory/{id}"));
+            var hasArticle = JsonConvert.DeserializeObject<bool>(response.Result.Content.ReadAsStringAsync().Result);
+
+            return hasArticle;
         }
+    }
 
-        public bool ArticleInInventory(int id)
+    public Article GetArticle(int id)
+    {
+        using (var client = new HttpClient())
         {
-            using (var client = new HttpClient())
-            {
-                var response = client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{_supplierUrl}/ArticleInInventory/{id}"));
-                var hasArticle = JsonConvert.DeserializeObject<bool>(response.Result.Content.ReadAsStringAsync().Result);
+            var response = client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{_supplierUrl}/ArticleInInventory/{id}"));
+            var article = JsonConvert.DeserializeObject<Article>(response.Result.Content.ReadAsStringAsync().Result);
 
-                return hasArticle;
-            }
-        }
-
-        public Article GetArticle(int id)
-        {
-            using (var client = new HttpClient())
-            {
-                var response = client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{_supplierUrl}/ArticleInInventory/{id}"));
-                var article = JsonConvert.DeserializeObject<Article>(response.Result.Content.ReadAsStringAsync().Result);
-
-                return article;
-            }
+            return article;
         }
     }
 }

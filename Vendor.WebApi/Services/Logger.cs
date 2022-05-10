@@ -1,22 +1,19 @@
-﻿using System;
+﻿namespace Vendor.WebApi.Services;
 
-namespace Vendor.WebApi.Services
+public class Logger
 {
-    public class Logger
+    public void Info(string message)
     {
-        public void Info(string message)
-        {
-            Console.WriteLine("Info: " + message);
-        }
+        Console.WriteLine("Info: " + message);
+    }
 
-        public void Error(string message)
-        {
-            Console.WriteLine("Error: " + message);
-        }
+    public void Error(string message)
+    {
+        Console.WriteLine("Error: " + message);
+    }
 
-        public void Debug(string message)
-        {
-            Console.WriteLine("Debug: " + message);
-        }
+    public void Debug(string message)
+    {
+        Console.WriteLine("Debug: " + message);
     }
 }
