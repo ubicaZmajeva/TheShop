@@ -10,9 +10,9 @@ public class ShopControllerTests
 {
     private readonly Mock<IRepository> _mockRepository = new();
     private readonly Mock<ICachedSupplier> _mockCachedSupplier = new ();
-    private readonly Mock<IWarehouse> _mockWarehouse = new ();
-    private readonly Mock<IDealer1> _mockDealer1 = new ();
-    private readonly Mock<IDealer2> _mockDealer2 = new ();
+    private readonly Mock<IArticleProvider> _mockWarehouse = new ();
+    private readonly Mock<IArticleProvider> _mockDealer1 = new ();
+    private readonly Mock<IArticleProvider> _mockDealer2 = new ();
     
     [Fact]
     public void GetArticle_IfArticleExistsInCacheUseItIfPriceIsRight()
@@ -28,9 +28,12 @@ public class ShopControllerTests
         var sus = new ShopController(
             _mockRepository.Object,
             _mockCachedSupplier.Object,
-            _mockWarehouse.Object,
-            _mockDealer1.Object,
-            _mockDealer2.Object
+            new[]
+            {
+                _mockWarehouse.Object,
+                _mockDealer1.Object,
+                _mockDealer2.Object 
+            }
         );
         
         var result = sus.GetArticle(0);
@@ -53,9 +56,12 @@ public class ShopControllerTests
         var sus = new ShopController(
             _mockRepository.Object,
             _mockCachedSupplier.Object,
-            _mockWarehouse.Object,
-            _mockDealer1.Object,
-            _mockDealer2.Object
+            new[]
+            {
+                _mockWarehouse.Object,
+                _mockDealer1.Object,
+                _mockDealer2.Object 
+            }
         );
         
         sus.GetArticle(0);
@@ -70,9 +76,12 @@ public class ShopControllerTests
         var sus = new ShopController(
             _mockRepository.Object,
             _mockCachedSupplier.Object,
-            _mockWarehouse.Object,
-            _mockDealer1.Object,
-            _mockDealer2.Object
+            new[]
+            {
+                _mockWarehouse.Object,
+                _mockDealer1.Object,
+                _mockDealer2.Object 
+            }
         );
         
         sus.GetArticle(0);
@@ -94,9 +103,12 @@ public class ShopControllerTests
         var sus = new ShopController(
             _mockRepository.Object,
             _mockCachedSupplier.Object,
-            _mockWarehouse.Object,
-            _mockDealer1.Object,
-            _mockDealer2.Object
+            new[]
+            {
+                _mockWarehouse.Object,
+                _mockDealer1.Object,
+                _mockDealer2.Object 
+            }
         );
         
         var result = sus.GetArticle(0);
@@ -114,9 +126,12 @@ public class ShopControllerTests
         var sus = new ShopController(
             _mockRepository.Object,
             _mockCachedSupplier.Object,
-            _mockWarehouse.Object,
-            _mockDealer1.Object,
-            _mockDealer2.Object
+            new[]
+            {
+                _mockWarehouse.Object,
+                _mockDealer1.Object,
+                _mockDealer2.Object 
+            }
         );
         
         sus.GetArticle(0);
@@ -133,9 +148,12 @@ public class ShopControllerTests
         var sus = new ShopController(
             _mockRepository.Object,
             _mockCachedSupplier.Object,
-            _mockWarehouse.Object,
-            _mockDealer1.Object,
-            _mockDealer2.Object
+            new[]
+            {
+                _mockWarehouse.Object,
+                _mockDealer1.Object,
+                _mockDealer2.Object 
+            }
         );
         
         sus.GetArticle(0);
@@ -159,9 +177,12 @@ public class ShopControllerTests
         var sus = new ShopController(
             _mockRepository.Object,
             _mockCachedSupplier.Object,
-            _mockWarehouse.Object,
-            _mockDealer1.Object,
-            _mockDealer2.Object
+            new[]
+            {
+                _mockWarehouse.Object,
+                _mockDealer1.Object,
+                _mockDealer2.Object 
+            }
         );
         
         var result = sus.GetArticle(0);
@@ -186,9 +207,12 @@ public class ShopControllerTests
         var sus = new ShopController(
             _mockRepository.Object,
             _mockCachedSupplier.Object,
-            _mockWarehouse.Object,
-            _mockDealer1.Object,
-            _mockDealer2.Object
+            new[]
+            {
+                _mockWarehouse.Object,
+                _mockDealer1.Object,
+                _mockDealer2.Object 
+            }
         );
         
         var result = sus.GetArticle(0);
@@ -206,9 +230,12 @@ public class ShopControllerTests
         var sus = new ShopController(
             _mockRepository.Object,
             _mockCachedSupplier.Object,
-            _mockWarehouse.Object,
-            _mockDealer1.Object,
-            _mockDealer2.Object
+            new[]
+            {
+                _mockWarehouse.Object,
+                _mockDealer1.Object,
+                _mockDealer2.Object 
+            }
         );
         
         var result = sus.GetArticle(0);

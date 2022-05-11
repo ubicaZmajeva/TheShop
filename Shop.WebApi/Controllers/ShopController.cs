@@ -11,22 +11,16 @@ public class ShopController : ControllerBase
 {
     private readonly IRepository _db;
     private readonly ICachedSupplier _cachedSupplier;
-    private readonly IWarehouse _warehouse;
-    private readonly IDealer1 _dealer1;
-    private readonly IDealer2 _dealer2;
+    private readonly IEnumerable<IArticleProvider> _articleProviders;
 
     public ShopController(
         IRepository db, 
         ICachedSupplier cachedSupplier, 
-        IWarehouse warehouse, 
-        IDealer1 dealer1, 
-        IDealer2 dealer2)
+        IEnumerable<IArticleProvider> articleProviders)
     {
         _db = db;
         _cachedSupplier = cachedSupplier;
-        _warehouse = warehouse;
-        _dealer1 = dealer1;
-        _dealer2 = dealer2;
+        _articleProviders = articleProviders;
     }
 
     [HttpGet]
@@ -41,37 +35,19 @@ public class ShopController : ControllerBase
                 return article;
             }
         }
-        
-        if (_warehouse.ArticleInInventory(id))
-        {
-            var article = _warehouse.GetArticle(id);
-            if (maxExpectedPrice >= article.ArticlePrice)
-            {
-                _cachedSupplier.SetArticle(article);
-                return article;
-            }
-        }
-        
-        if (_dealer1.ArticleInInventory(id))
-        {
-            var article = _dealer1.GetArticle(id);
-            if (maxExpectedPrice >= article.ArticlePrice)
-            {
-                _cachedSupplier.SetArticle(article);
-                return article;
-            }
-        }
-        
-        if (_dealer2.ArticleInInventory(id))
-        {
-            var article = _dealer2.GetArticle(id);
-            if (maxExpectedPrice >= article.ArticlePrice)
-            {
-                _cachedSupplier.SetArticle(article);
-                return article;
-            }
-        }
 
+        foreach (var articleProvider in _articleProviders)
+        {
+            if (!articleProvider.ArticleInInventory(id)) 
+                continue;
+            
+            var article = articleProvider.GetArticle(id);
+            if (maxExpectedPrice < article.ArticlePrice) 
+                continue;
+            
+            _cachedSupplier.SetArticle(article);
+            return article;
+        }
         return null;
     }
 

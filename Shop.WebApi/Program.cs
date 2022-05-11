@@ -5,9 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddSingleton<IRepository, Db>();
 builder.Services.AddSingleton<ICachedSupplier, CachedSupplier>();
-builder.Services.AddTransient<IWarehouse, Warehouse>();
-builder.Services.AddTransient<IDealer1>(m => new Dealer1(builder.Configuration.GetValue<string>("Dealer2Url")));
-builder.Services.AddTransient<IDealer2>(m => new Dealer2(builder.Configuration.GetValue<string>("Dealer2Url")));
+builder.Services.AddTransient<IArticleProvider, Warehouse>();
+builder.Services.AddTransient<IArticleProvider>(m => new Dealer1(builder.Configuration.GetValue<string>("Dealer1Url")));
+builder.Services.AddTransient<IArticleProvider>(m => new Dealer2(builder.Configuration.GetValue<string>("Dealer2Url")));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -19,13 +19,15 @@ public class SupplierController : ControllerBase
         logger = new Logger();
         _supplierService = new SupplierService();
     }
-
+    
+    [HttpGet("ArticleInInventory/{id:int}")]
     public bool ArticleInInventory(int id)
     {
         return _supplierService.ArticleInInventory(id);
     }
 
-    public Article GetArtice(int id)
+    [HttpGet("GetArticle/{id:int}")] 
+    public Article GetArticle(int id)
     {
         var articleExists = _supplierService.ArticleInInventory(id);
         if (articleExists)
