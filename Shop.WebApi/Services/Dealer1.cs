@@ -1,11 +1,9 @@
-﻿using System.Configuration;
-using System.Net.Http;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Shop.WebApi.Models;
 
 namespace Shop.WebApi.Services;
 
-public class Dealer1
+public class Dealer1: IDealer1
 {
     private readonly string _supplierUrl;
 

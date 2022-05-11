@@ -2,7 +2,7 @@
 
 namespace Shop.WebApi.Services;
 
-public class Db
+public class Db: IRepository
 {
     private List<Article> _articles = new List<Article>();
 

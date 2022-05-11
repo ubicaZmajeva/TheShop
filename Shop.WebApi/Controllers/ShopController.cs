@@ -8,68 +8,70 @@ namespace Shop.WebApi.Controllers;
 [Route("[controller]")]
 public class ShopController : ControllerBase
 {
-    private Db Db;
-    private Logger logger;
+    private readonly IRepository _db;
+    private readonly ICachedSupplier _cachedSupplier;
+    private readonly IWarehouse _warehouse;
+    private readonly IDealer1 _dealer1;
+    private readonly IDealer2 _dealer2;
 
-    private CachedSupplier CachedSupplier;
-    private Warehouse Warehouse;
-    private Dealer1 Dealer1;
-    private Dealer2 Dealer2;
-
-    public ShopController(IConfiguration configuration)
+    public ShopController(
+        IRepository db, 
+        ICachedSupplier cachedSupplier, 
+        IWarehouse warehouse, 
+        IDealer1 dealer1, 
+        IDealer2 dealer2)
     {
-        Db = new Db();
-        logger = new Logger();
-        CachedSupplier = new CachedSupplier();
-        Warehouse = new Warehouse();
-        Dealer1 = new Dealer1(configuration.GetValue<string>("Dealer2Url"));
-        Dealer2 = new Dealer2(configuration.GetValue<string>("Dealer2Url"));
+        _db = db;
+        _cachedSupplier = cachedSupplier;
+        _warehouse = warehouse;
+        _dealer1 = dealer1;
+        _dealer2 = dealer2;
     }
 
-    [HttpGet()]
-    public Article GetArtice(int id, int maxExpectedPrice = 200)
+    [HttpGet]
+    public Article GetArticle(int id, int maxExpectedPrice = 200)
     {
-        Article article = null;
-        Article tmp = null;
-        var articleExists = CachedSupplier.ArticleInInventory(id);
-        if (articleExists)
+        
+        if (_cachedSupplier.ArticleInInventory(id))
         {
-            tmp = CachedSupplier.GetArticle(id);
-            if (maxExpectedPrice < tmp.ArticlePrice)
+            var article = _cachedSupplier.GetArticle(id);
+            if (maxExpectedPrice >= article.ArticlePrice)
             {
-                articleExists = Warehouse.ArticleInInventory(id);
-                if (articleExists)
-                {
-                    tmp = Warehouse.GetArticle(id);
-                    if (maxExpectedPrice < tmp.ArticlePrice)
-                    {
-                        articleExists = Dealer1.ArticleInInventory(id);
-                        if (articleExists)
-                        {
-                            tmp = Dealer1.GetArticle(id);
-                            if (maxExpectedPrice < tmp.ArticlePrice)
-                            {
-                                articleExists = Dealer2.ArticleInInventory(id);
-                                if (articleExists)
-                                {
-                                    tmp = Dealer2.GetArticle(id);
-                                    if (maxExpectedPrice < tmp.ArticlePrice)
-                                    {
-                                        article = tmp;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if (article != null)
-                {
-                    CachedSupplier.SetArticle(article);
-                }
+                return article;
+            }
+        }
+        
+        if (_warehouse.ArticleInInventory(id))
+        {
+            var article = _warehouse.GetArticle(id);
+            if (maxExpectedPrice >= article.ArticlePrice)
+            {
+                _cachedSupplier.SetArticle(article);
+                return article;
+            }
+        }
+        
+        if (_dealer1.ArticleInInventory(id))
+        {
+            var article = _dealer1.GetArticle(id);
+            if (maxExpectedPrice >= article.ArticlePrice)
+            {
+                _cachedSupplier.SetArticle(article);
+                return article;
+            }
+        }
+        
+        if (_dealer2.ArticleInInventory(id))
+        {
+            var article = _dealer2.GetArticle(id);
+            if (maxExpectedPrice >= article.ArticlePrice)
+            {
+                _cachedSupplier.SetArticle(article);
+                return article;
             }
         }
 
-        return article;
+        return null;
     }
 
     [HttpPost]
@@ -81,7 +83,7 @@ public class ShopController : ControllerBase
             throw new Exception("Could not order article");
         }
 
-        logger.Debug("Trying to sell article with id=" + id);
+        Logger.Debug("Trying to sell article with id=" + id);
 
         article.IsSold = true;
         article.SoldDate = DateTime.Now;
@@ -89,12 +91,12 @@ public class ShopController : ControllerBase
 
         try
         {
-            Db.Save(article);
-            logger.Info("Article with id " + id + " is sold.");
+            _db.Save(article);
+            Logger.Info("Article with id " + id + " is sold.");
         }
         catch (ArgumentNullException ex)
         {
-            logger.Error("Could not save article with id " + id);
+            Logger.Error("Could not save article with id " + id);
             throw new Exception("Could not save article with id");
         }
         catch (Exception)

@@ -2,7 +2,7 @@
 
 namespace Shop.WebApi.Services;
 
-public class CachedSupplier
+public class CachedSupplier: ICachedSupplier
 {
     private Dictionary<int, Article> _cachedArticles = new Dictionary<int, Article>();
     public bool ArticleInInventory(int id)

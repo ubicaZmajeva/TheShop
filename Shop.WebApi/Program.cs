@@ -1,6 +1,13 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using Shop.WebApi.Services;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddSingleton<IRepository, Db>();
+builder.Services.AddSingleton<ICachedSupplier, CachedSupplier>();
+builder.Services.AddTransient<IWarehouse, Warehouse>();
+builder.Services.AddTransient<IDealer1>(m => new Dealer1(builder.Configuration.GetValue<string>("Dealer2Url")));
+builder.Services.AddTransient<IDealer2>(m => new Dealer2(builder.Configuration.GetValue<string>("Dealer2Url")));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -20,3 +27,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+public partial class Program { } // so you can reference it from tests
