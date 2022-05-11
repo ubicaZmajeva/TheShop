@@ -14,23 +14,18 @@ public class Dealer2: IDealer2
 
     public bool ArticleInInventory(int id)
     {
-        using (var client = new HttpClient())
-        {
-            var response = client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{_supplierUrl}/Supplier/ArticleInInventory/{id}"));
-            var hasArticle = JsonConvert.DeserializeObject<bool>(response.Result.Content.ReadAsStringAsync().Result);
+        using var client = new HttpClient();
+        var response = client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{_supplierUrl}/Supplier/ArticleInInventory/{id}"));
+        var hasArticle = JsonConvert.DeserializeObject<bool>(response.Result.Content.ReadAsStringAsync().Result);
 
-            return hasArticle;
-        }
+        return hasArticle;
     }
 
     public Article GetArticle(int id)
     {
-        using (var client = new HttpClient())
-        {
-            var response = client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{_supplierUrl}/Supplier/ArticleInInventory/{id}"));
-            var article = JsonConvert.DeserializeObject<Article>(response.Result.Content.ReadAsStringAsync().Result);
-
-            return article;
-        }
+        using var client = new HttpClient();
+        var response = client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{_supplierUrl}/Supplier/ArticleInInventory/{id}"));
+        var article = JsonConvert.DeserializeObject<Article>(response.Result.Content.ReadAsStringAsync().Result);
+        return article;
     }
 }

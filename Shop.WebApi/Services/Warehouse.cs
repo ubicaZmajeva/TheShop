@@ -13,8 +13,8 @@ public class Warehouse: IWarehouse
     {
         return new Article()
         {
-            ID = id,
-            Name_of_article = $"Article {id}",
+            Id = id,
+            NameOfArticle = $"Article {id}",
             ArticlePrice = new Random().Next(100, 500)
         };
     }

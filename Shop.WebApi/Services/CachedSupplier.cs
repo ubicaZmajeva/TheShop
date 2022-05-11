@@ -4,7 +4,7 @@ namespace Shop.WebApi.Services;
 
 public class CachedSupplier: ICachedSupplier
 {
-    private Dictionary<int, Article> _cachedArticles = new Dictionary<int, Article>();
+    private readonly Dictionary<int, Article> _cachedArticles = new();
     public bool ArticleInInventory(int id)
     {
         return _cachedArticles.ContainsKey(id);
@@ -12,13 +12,12 @@ public class CachedSupplier: ICachedSupplier
 
     public Article GetArticle(int id)
     {
-        Article article;
-        _cachedArticles.TryGetValue(id, out article);
+        _cachedArticles.TryGetValue(id, out var article);
         return article;
     }
 
     public void SetArticle(Article article)
     {
-        _cachedArticles.Add(article.ID, article);
+        _cachedArticles.Add(article.Id, article);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿#nullable enable
+using Microsoft.AspNetCore.Mvc;
 using Shop.WebApi.Models;
 using Shop.WebApi.Services;
 
@@ -29,7 +30,7 @@ public class ShopController : ControllerBase
     }
 
     [HttpGet]
-    public Article GetArticle(int id, int maxExpectedPrice = 200)
+    public Article? GetArticle(int id, int maxExpectedPrice = 200)
     {
         
         if (_cachedSupplier.ArticleInInventory(id))
@@ -77,13 +78,12 @@ public class ShopController : ControllerBase
     [HttpPost]
     public void BuyArticle(Article article, int buyerId)
     {
-        var id = article.ID;
         if (article == null)
         {
             throw new Exception("Could not order article");
         }
 
-        Logger.Debug("Trying to sell article with id=" + id);
+        Logger.Debug($"Trying to sell article with id={article.Id}");
 
         article.IsSold = true;
         article.SoldDate = DateTime.Now;
@@ -92,15 +92,16 @@ public class ShopController : ControllerBase
         try
         {
             _db.Save(article);
-            Logger.Info("Article with id " + id + " is sold.");
+            Logger.Info($"Article with id {article.Id} is sold.");
         }
-        catch (ArgumentNullException ex)
+        catch (ArgumentNullException)
         {
-            Logger.Error("Could not save article with id " + id);
+            Logger.Error($"Could not save article with id {article.Id}");
             throw new Exception("Could not save article with id");
         }
         catch (Exception)
         {
+            // ignored
         }
     }
 }
