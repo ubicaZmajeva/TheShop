@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Diagnostics.CodeAnalysis;
+using MediatR;
 using Shop.WebApi.Services.ArticleProviders;
 using Shop.WebApi.Services.ArticleProviders.Core;
 using Shop.WebApi.Services.Cache;
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddSingleton<IRepository, Repository>();
 builder.Services.AddSingleton<ICachedSupplier, CachedSupplier>();
+
 builder.Services.AddTransient<IArticleProvider, Warehouse>();
 builder.Services.AddHttpClient<IArticleProvider, DealerConnector>(m => m.BaseAddress = new Uri(builder.Configuration.GetValue<string>("Dealer1Url")));
 builder.Services.AddHttpClient<IArticleProvider, DealerConnector>(m => m.BaseAddress = new Uri(builder.Configuration.GetValue<string>("Dealer2Url")));
@@ -31,4 +33,5 @@ app.UseHttpsRedirection();
 app.MapControllers();
 app.Run();
 
-public partial class Program { } 
+[ExcludeFromCodeCoverage(Justification = "Nothing to test here")]
+public partial class Program { }

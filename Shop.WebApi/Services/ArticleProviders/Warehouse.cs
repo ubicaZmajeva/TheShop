@@ -1,8 +1,10 @@
-﻿using Shop.WebApi.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+using Shop.WebApi.Models;
 using Shop.WebApi.Services.ArticleProviders.Core;
 
 namespace Shop.WebApi.Services.ArticleProviders;
 
+[ExcludeFromCodeCoverage(Justification = "Due to simplicity of implementation, there are no opportunity to implement test")]
 public class Warehouse: IArticleProvider
 {
     public Task<bool> ArticleInInventory(int id) => Task.FromResult(new Random().NextDouble() >= 0.5);

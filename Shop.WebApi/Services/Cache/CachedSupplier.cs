@@ -1,23 +1,17 @@
 ﻿using Shop.WebApi.Models;
+using Shop.WebApi.Services.Repositories;
 
 namespace Shop.WebApi.Services.Cache;
 
 public class CachedSupplier: ICachedSupplier
 {
-    private readonly Dictionary<int, Article> _cachedArticles = new();
-    public bool ArticleInInventory(int id)
+    private readonly IRepository _repository;
+    public CachedSupplier(IRepository repository)
     {
-        return _cachedArticles.ContainsKey(id);
+        _repository = repository;
     }
 
-    public Article GetArticle(int id)
-    {
-        _cachedArticles.TryGetValue(id, out var article);
-        return article;
-    }
-
-    public void SetArticle(Article article)
-    {
-        _cachedArticles.Add(article.Id, article);
-    }
+    public bool ArticleInInventory(int id) => GetArticle(id) != null;
+    public Article GetArticle(int id) => _repository.GetById(id);
+    public Article SetArticle(Article article) => _repository.Save(article);
 }
