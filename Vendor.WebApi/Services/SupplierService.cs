@@ -2,20 +2,15 @@
 
 namespace Vendor.WebApi.Services;
 
-public class SupplierService
+public class SupplierService: ISupplierService
 {
-    public bool ArticleInInventory(int id)
-    {
-        return new Random().NextDouble() >= 0.5;
-    }
+    public bool ArticleInInventory(int id) => new Random().NextDouble() >= 0.5;
 
-    public Article GetArticle(int id)
-    {
-        return new Article()
+    public Article GetArticle(int id) =>
+        new()
         {
-            ID = id,
-            Name_of_article = $"Article {id}",
-            ArticlePrice = new Random().Next(100,500)
+            Id = id,
+            NameOfArticle = $"Article {id}",
+            ArticlePrice = new Random().Next(100, 500)
         };
-    }
 }

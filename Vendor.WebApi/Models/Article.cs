@@ -1,14 +1,20 @@
-﻿namespace Vendor.WebApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace Vendor.WebApi.Models;
 
 public class Article
 {
-    public int ID { get; set; }
-
-    public string Name_of_article { get; set; }
-
+    [JsonPropertyName("ID")]
+    public int Id { get; set; }
+    
+    [JsonPropertyName("Name_of_article")]
+    public string NameOfArticle { get; set; }
+    
     public int ArticlePrice { get; set; }
+    
     public bool IsSold { get; set; }
-
-    public DateTime SoldDate { get; set; }
-    public int BuyerUserId { get; set; }
+    
+    public DateTime? SoldDate { get; set; }
+    
+    public int? BuyerUserId { get; set; }
 }
