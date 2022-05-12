@@ -1,11 +1,11 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Newtonsoft.Json;
 using Shop.WebApi.Models;
-using Shop.WebApi.Services;
 using Shop.WebApi.Services.ArticleProviders;
 using Xunit;
 
@@ -61,6 +61,7 @@ public class DealerConnectorTests
         Assert.Equal(article.Id, response.Id);
     }
     
+    [ExcludeFromCodeCoverage]
     public abstract class FakeHandler: HttpMessageHandler
     {
         public virtual HttpResponseMessage Send() => new();

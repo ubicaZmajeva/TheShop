@@ -34,23 +34,16 @@ public class RepositoryTests
     }
     
     [Fact]
-    public void GetById_UpdateExisting()
+    public void Save_EntityWithSameIdAlreadyExists_ThrowsException()
     {
-        var initialNameOfArticle = Guid.NewGuid().ToString("N");
-        var newNameOfArticle = Guid.NewGuid().ToString("N");
         var article = new Article
         {
             Id = new Random().Next(1, Int32.MaxValue),
-            NameOfArticle = initialNameOfArticle
+            NameOfArticle = Guid.NewGuid().ToString("N")
         };
         var sus = new Repository();
 
         sus.Save(article);
-        
-        var result = sus.GetById(article.Id);
-        
-        article.NameOfArticle = newNameOfArticle;
-        sus.Save(article);
-        Assert.Equal(newNameOfArticle, result.NameOfArticle);
+        Assert.Throws<ApplicationException>(() => sus.Save(article));
     }
 }

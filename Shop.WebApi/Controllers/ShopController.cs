@@ -19,7 +19,7 @@ public class ShopController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetArticle(int id, int maxExpectedPrice = 200, CancellationToken cancellationToken = default) => 
         Ok(await _mediator.Send(GetArticleQuery.CreateInstance(id, maxExpectedPrice), cancellationToken));
-
+    
     [HttpPost]
     public async Task<IActionResult> BuyArticle(Article article, int buyerId, CancellationToken cancellationToken) => 
         Ok(await _mediator.Send(BuyArticleCommand.CreateInstance(article, buyerId), cancellationToken));

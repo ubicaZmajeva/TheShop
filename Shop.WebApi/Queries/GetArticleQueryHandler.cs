@@ -19,7 +19,6 @@ public class GetArticleQueryHandler : IRequestHandler<GetArticleQuery, Article>
         _articleProviders = articleProviders;
     }
     
-    
     public async Task<Article> Handle(GetArticleQuery request, CancellationToken cancellationToken)
     {
         if (_cachedSupplier.ArticleInInventory(request.Id))
