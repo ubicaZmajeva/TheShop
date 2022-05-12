@@ -7,10 +7,12 @@ namespace Shop.WebApi.Commands;
 public class BuyArticleCommandHandler : RequestHandler<BuyArticleCommand>
 {
     private readonly IRepository _db;
+    private readonly ILogger _logger;
 
-    public BuyArticleCommandHandler(IRepository db)
+    public BuyArticleCommandHandler(IRepository db, ILogger<BuyArticleCommandHandler> logger)
     {
         _db = db;
+        _logger = logger;
     }
     
     protected override void Handle(BuyArticleCommand request)
@@ -20,7 +22,7 @@ public class BuyArticleCommandHandler : RequestHandler<BuyArticleCommand>
             throw new Exception("Could not order article");
         }
         
-        Logger.Debug($"Trying to sell article with id={request.Article.Id}");
+        _logger.LogDebug("Trying to sell article with id {ArticleId}", request.Article.Id);
         
         request.Article.IsSold = true;
         request.Article.SoldDate = DateTime.Now;
@@ -29,11 +31,11 @@ public class BuyArticleCommandHandler : RequestHandler<BuyArticleCommand>
         try
         {
             _db.Save(request.Article);
-            Logger.Info($"Article with id {request.Article.Id} is sold.");
+            _logger.LogInformation("Article with id {ArticleId} is sold", request.Article.Id);
         }
         catch (ArgumentNullException)
         {
-            Logger.Error($"Could not save article with id {request.Article.Id}");
+            _logger.LogError("Could not save article with id {ArticleId}", request.Article.Id);
             throw new Exception("Could not save article with id");
         }
         catch (Exception)
