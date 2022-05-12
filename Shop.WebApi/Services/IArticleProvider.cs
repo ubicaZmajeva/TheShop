@@ -4,6 +4,6 @@ namespace Shop.WebApi.Services;
 
 public interface IArticleProvider
 {
-    bool ArticleInInventory(int id);
-    Article GetArticle(int id);
+    Task<bool> ArticleInInventory(int id);
+    Task<Article> GetArticle(int id);
 }

@@ -6,7 +6,7 @@ using Shop.WebApi.Queries;
 using Shop.WebApi.Services;
 using Xunit;
 
-namespace Shop.WebApi.Tests;
+namespace Shop.WebApi.Tests.Queries;
 
 public class GetArticleQueryHandlerTests {
     
@@ -95,8 +95,8 @@ public class GetArticleQueryHandlerTests {
         };
         
         _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => true);
-        _mockWarehouse.Setup(m => m.GetArticle(It.IsAny<int>())).Returns<int>(_ => dummyArticle);
+        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(true));
+        _mockWarehouse.Setup(m => m.GetArticle(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(dummyArticle));
         
         var sus = new GetArticleQueryHandler(
             _mockCachedSupplier.Object,
@@ -118,7 +118,7 @@ public class GetArticleQueryHandlerTests {
     public async Task Handle_IfNoArticleInCacheOrWarehouseProbeDealer1()
     {
         _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
+        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(false));
         
         var sus = new GetArticleQueryHandler(
             _mockCachedSupplier.Object,
@@ -138,8 +138,8 @@ public class GetArticleQueryHandlerTests {
     public async Task Handle_IfNoArticleInCacheOrWarehouseOrDealer1ProbeDealer2()
     {
         _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer1.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
+        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(false));
+        _mockDealer1.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(false));
 
         var sus = new GetArticleQueryHandler(
             _mockCachedSupplier.Object,
@@ -164,10 +164,10 @@ public class GetArticleQueryHandlerTests {
         };
 
         _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer1.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer2.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => true);
-        _mockDealer2.Setup(m => m.GetArticle(It.IsAny<int>())).Returns<int>(_ => dummyArticle);
+        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(false));
+        _mockDealer1.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(false));
+        _mockDealer2.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(true));
+        _mockDealer2.Setup(m => m.GetArticle(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(dummyArticle));
 
         var sus = new GetArticleQueryHandler(
             _mockCachedSupplier.Object,
@@ -193,10 +193,10 @@ public class GetArticleQueryHandlerTests {
         };
 
         _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer1.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer2.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => true);
-        _mockDealer2.Setup(m => m.GetArticle(It.IsAny<int>())).Returns<int>(_ => dummyArticle);
+        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(false));
+        _mockDealer1.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(false));
+        _mockDealer2.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(true));
+        _mockDealer2.Setup(m => m.GetArticle(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(dummyArticle));
 
         var sus = new GetArticleQueryHandler(
             _mockCachedSupplier.Object,
@@ -216,9 +216,9 @@ public class GetArticleQueryHandlerTests {
     public async Task Handle_ReturnNullIfArticleCannotBeFound()
     {
         _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer1.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer2.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
+        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(false));
+        _mockDealer1.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(false));
+        _mockDealer2.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => Task.FromResult(false));
 
         var sus = new GetArticleQueryHandler(
             _mockCachedSupplier.Object,

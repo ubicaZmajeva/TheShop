@@ -7,8 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<IRepository, Db>();
 builder.Services.AddSingleton<ICachedSupplier, CachedSupplier>();
 builder.Services.AddTransient<IArticleProvider, Warehouse>();
-builder.Services.AddTransient<IArticleProvider>(m => new Dealer1(builder.Configuration.GetValue<string>("Dealer1Url")));
-builder.Services.AddTransient<IArticleProvider>(m => new Dealer2(builder.Configuration.GetValue<string>("Dealer2Url")));
+builder.Services.AddHttpClient<IArticleProvider, DealerConnector>(
+    cfg => cfg.BaseAddress = new Uri(builder.Configuration.GetValue<string>("Dealer1Url")));
+builder.Services.AddHttpClient<IArticleProvider, DealerConnector>(
+    cfg => cfg.BaseAddress = new Uri(builder.Configuration.GetValue<string>("Dealer2Url")));
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -16,6 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddMediatR(typeof(Program).Assembly);
+
 
 var app = builder.Build();
 

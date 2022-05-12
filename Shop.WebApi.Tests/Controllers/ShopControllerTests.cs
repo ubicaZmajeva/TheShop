@@ -9,7 +9,7 @@ using Shop.WebApi.Models;
 using Shop.WebApi.Queries;
 using Xunit;
 
-namespace Shop.WebApi.Tests;
+namespace Shop.WebApi.Tests.Controllers;
 
 public class ShopControllerTests
 {

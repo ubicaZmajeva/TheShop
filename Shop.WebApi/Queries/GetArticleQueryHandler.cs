@@ -18,29 +18,29 @@ public class GetArticleQueryHandler : IRequestHandler<GetArticleQuery, Article>
     }
     
     
-    public Task<Article> Handle(GetArticleQuery request, CancellationToken cancellationToken)
+    public async Task<Article> Handle(GetArticleQuery request, CancellationToken cancellationToken)
     {
         if (_cachedSupplier.ArticleInInventory(request.Id))
         {
             var article = _cachedSupplier.GetArticle(request.Id);
             if (request.MaxExpectedPrice >= article.ArticlePrice)
             {
-                return Task.FromResult(article);
+                return article;
             }
         }
         
         foreach (var articleProvider in _articleProviders)
         {
-            if (!articleProvider.ArticleInInventory(request.Id)) 
+            if (!await articleProvider.ArticleInInventory(request.Id)) 
                 continue;
             
-            var article = articleProvider.GetArticle(request.Id);
+            var article = await articleProvider.GetArticle(request.Id);
             if (request.MaxExpectedPrice < article.ArticlePrice) 
                 continue;
             
             _cachedSupplier.SetArticle(article);
-            return Task.FromResult(article);
+            return article;
         }
-        return Task.FromResult<Article>(null);
+        return null;
     }
 }

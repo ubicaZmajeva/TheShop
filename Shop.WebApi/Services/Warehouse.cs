@@ -4,18 +4,18 @@ namespace Shop.WebApi.Services;
 
 public class Warehouse: IArticleProvider
 {
-    public bool ArticleInInventory(int id)
+    public Task<bool> ArticleInInventory(int id)
     {
-        return new Random().NextDouble() >= 0.5;
+        return Task.FromResult(new Random().NextDouble() >= 0.5);
     }
 
-    public Article GetArticle(int id)
+    public Task<Article> GetArticle(int id)
     {
-        return new Article()
+        return Task.FromResult(new Article()
         {
             Id = id,
             NameOfArticle = $"Article {id}",
             ArticlePrice = new Random().Next(100, 500)
-        };
+        });
     }
 }
