@@ -1,244 +1,52 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 using Moq;
+using Shop.WebApi.Commands;
 using Shop.WebApi.Controllers;
 using Shop.WebApi.Models;
-using Shop.WebApi.Services;
+using Shop.WebApi.Queries;
 using Xunit;
 
 namespace Shop.WebApi.Tests;
 
 public class ShopControllerTests
 {
-    private readonly Mock<IRepository> _mockRepository = new();
-    private readonly Mock<ICachedSupplier> _mockCachedSupplier = new ();
-    private readonly Mock<IArticleProvider> _mockWarehouse = new ();
-    private readonly Mock<IArticleProvider> _mockDealer1 = new ();
-    private readonly Mock<IArticleProvider> _mockDealer2 = new ();
-    
     [Fact]
-    public void GetArticle_IfArticleExistsInCacheUseItIfPriceIsRight()
+    public async Task GetArticle_SendsQueryToMediator()
     {
-        var dummyArticle = new Article
-        {
-            ArticlePrice = 100
-        };
-        
-        _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => true);
-        _mockCachedSupplier.Setup(m => m.GetArticle(It.IsAny<int>())).Returns<int>(_ => dummyArticle);
-        
-        var sus = new ShopController(
-            _mockRepository.Object,
-            _mockCachedSupplier.Object,
-            new[]
-            {
-                _mockWarehouse.Object,
-                _mockDealer1.Object,
-                _mockDealer2.Object 
-            }
-        );
-        
-        var result = sus.GetArticle(0);
-        
-        Assert.NotNull(result);
-        Assert.Equal(dummyArticle, result);
-    }
-    
-    [Fact]
-    public void GetArticle_IfArticleExistsInCacheButPriceIsTooHighProbeWarehouse()
-    {
-        var dummyArticle = new Article
-        {
-            ArticlePrice = 210
-        };
-        
-        _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => true);
-        _mockCachedSupplier.Setup(m => m.GetArticle(It.IsAny<int>())).Returns<int>(_ => dummyArticle);
-        
-        var sus = new ShopController(
-            _mockRepository.Object,
-            _mockCachedSupplier.Object,
-            new[]
-            {
-                _mockWarehouse.Object,
-                _mockDealer1.Object,
-                _mockDealer2.Object 
-            }
-        );
-        
-        sus.GetArticle(0);
-        _mockWarehouse.Verify(m => m.ArticleInInventory(0), Times.Once);
-    }
-    
-    [Fact]
-    public void GetArticle_IfArticleDoesNotExistsInCacheProbeWarehouse()
-    {
-        _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        
-        var sus = new ShopController(
-            _mockRepository.Object,
-            _mockCachedSupplier.Object,
-            new[]
-            {
-                _mockWarehouse.Object,
-                _mockDealer1.Object,
-                _mockDealer2.Object 
-            }
-        );
-        
-        sus.GetArticle(0);
-        _mockWarehouse.Verify(m => m.ArticleInInventory(0), Times.Once);
-    }
-    
-    [Fact]
-    public void GetArticle_UseArticleFromWareHouseIfPriceIsRight()
-    {
-        var dummyArticle = new Article
-        {
-            ArticlePrice = 100
-        };
-        
-        _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => true);
-        _mockWarehouse.Setup(m => m.GetArticle(It.IsAny<int>())).Returns<int>(_ => dummyArticle);
-        
-        var sus = new ShopController(
-            _mockRepository.Object,
-            _mockCachedSupplier.Object,
-            new[]
-            {
-                _mockWarehouse.Object,
-                _mockDealer1.Object,
-                _mockDealer2.Object 
-            }
-        );
-        
-        var result = sus.GetArticle(0);
-        
-        Assert.NotNull(result);
-        Assert.Equal(dummyArticle, result);
-    }
-    
-    [Fact]
-    public void GetArticle_IfNoArticleInCacheOrWarehouseProbeDealer1()
-    {
-        _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        
-        var sus = new ShopController(
-            _mockRepository.Object,
-            _mockCachedSupplier.Object,
-            new[]
-            {
-                _mockWarehouse.Object,
-                _mockDealer1.Object,
-                _mockDealer2.Object 
-            }
-        );
-        
-        sus.GetArticle(0);
-        _mockDealer1.Verify(m => m.ArticleInInventory(0), Times.Once);
-    }
-    
-    [Fact]
-    public void GetArticle_IfNoArticleInCacheOrWarehouseOrDealer1ProbeDealer2()
-    {
-        _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer1.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
+        var mockMediator = new Mock<IMediator>();
+        var sus = new ShopController(mockMediator.Object);
+        var articleId = new Random().Next(1, int.MaxValue);
 
-        var sus = new ShopController(
-            _mockRepository.Object,
-            _mockCachedSupplier.Object,
-            new[]
-            {
-                _mockWarehouse.Object,
-                _mockDealer1.Object,
-                _mockDealer2.Object 
-            }
-        );
-        
-        sus.GetArticle(0);
-        _mockDealer2.Verify(m => m.ArticleInInventory(0), Times.Once);
+        await sus.GetArticle(articleId);
+
+        mockMediator.Verify(m => m.Send(
+            It.Is<GetArticleQuery>(n => n.Id == articleId), It.IsAny<CancellationToken>()), 
+            Times.Once);
     }
     
     [Fact]
-    public void GetArticle_ReturnArticleFromDealer2IfPriceIsRight()
+    public async Task BuyArticle_SendsCommandToMediator()
     {
-        var dummyArticle = new Article
-        {
-            ArticlePrice = 120
-        };
+        var mockMediator = new Mock<IMediator>();
+        var sus = new ShopController(mockMediator.Object);
+        var articleId = new Random().Next(1, int.MaxValue);
+        var buyerId = new Random().Next(1, int.MaxValue);
 
-        _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer1.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer2.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => true);
-        _mockDealer2.Setup(m => m.GetArticle(It.IsAny<int>())).Returns<int>(_ => dummyArticle);
-
-        var sus = new ShopController(
-            _mockRepository.Object,
-            _mockCachedSupplier.Object,
-            new[]
+        await sus.BuyArticle(
+            new Article
             {
-                _mockWarehouse.Object,
-                _mockDealer1.Object,
-                _mockDealer2.Object 
-            }
-        );
-        
-        var result = sus.GetArticle(0);
-        Assert.NotNull(result);
-        Assert.Equal(dummyArticle, result);
-    }
-    
-    [Fact]
-    public void GetArticle_ReturnNullIfArticleDealer2IsTooExpensive()
-    {
-        var dummyArticle = new Article
-        {
-            ArticlePrice = 220
-        };
+                Id = articleId
+            }, buyerId, CancellationToken.None);
 
-        _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer1.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer2.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => true);
-        _mockDealer2.Setup(m => m.GetArticle(It.IsAny<int>())).Returns<int>(_ => dummyArticle);
-
-        var sus = new ShopController(
-            _mockRepository.Object,
-            _mockCachedSupplier.Object,
-            new[]
-            {
-                _mockWarehouse.Object,
-                _mockDealer1.Object,
-                _mockDealer2.Object 
-            }
-        );
-        
-        var result = sus.GetArticle(0);
-        Assert.Null(result);
-    }
-    
-    [Fact]
-    public void GetArticle_ReturnNullIfArticleCannotBeFound()
-    {
-        _mockCachedSupplier.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockWarehouse.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer1.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-        _mockDealer2.Setup(m => m.ArticleInInventory(It.IsAny<int>())).Returns<int>(_ => false);
-
-        var sus = new ShopController(
-            _mockRepository.Object,
-            _mockCachedSupplier.Object,
-            new[]
-            {
-                _mockWarehouse.Object,
-                _mockDealer1.Object,
-                _mockDealer2.Object 
-            }
-        );
-        
-        var result = sus.GetArticle(0);
-        Assert.Null(result);
+        mockMediator.Verify(m => m.Send(
+            It.Is<BuyArticleCommand>(
+                n => n.Article.Id == articleId 
+                && n.BuyerId == buyerId
+                ), 
+            CancellationToken.None), 
+            Times.Once);
     }
 }

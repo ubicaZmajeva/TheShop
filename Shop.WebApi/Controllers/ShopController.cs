@@ -1,7 +1,8 @@
-﻿#nullable enable
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shop.WebApi.Commands;
 using Shop.WebApi.Models;
-using Shop.WebApi.Services;
+using Shop.WebApi.Queries;
 
 namespace Shop.WebApi.Controllers;
 
@@ -9,75 +10,18 @@ namespace Shop.WebApi.Controllers;
 [Route("[controller]")]
 public class ShopController : ControllerBase
 {
-    private readonly IRepository _db;
-    private readonly ICachedSupplier _cachedSupplier;
-    private readonly IEnumerable<IArticleProvider> _articleProviders;
-
-    public ShopController(
-        IRepository db, 
-        ICachedSupplier cachedSupplier, 
-        IEnumerable<IArticleProvider> articleProviders)
+    private readonly IMediator _mediator;
+    public ShopController(IMediator mediator)
     {
-        _db = db;
-        _cachedSupplier = cachedSupplier;
-        _articleProviders = articleProviders;
+        _mediator = mediator;
     }
 
     [HttpGet]
-    public Article? GetArticle(int id, int maxExpectedPrice = 200)
-    {
-        
-        if (_cachedSupplier.ArticleInInventory(id))
-        {
-            var article = _cachedSupplier.GetArticle(id);
-            if (maxExpectedPrice >= article.ArticlePrice)
-            {
-                return article;
-            }
-        }
-
-        foreach (var articleProvider in _articleProviders)
-        {
-            if (!articleProvider.ArticleInInventory(id)) 
-                continue;
-            
-            var article = articleProvider.GetArticle(id);
-            if (maxExpectedPrice < article.ArticlePrice) 
-                continue;
-            
-            _cachedSupplier.SetArticle(article);
-            return article;
-        }
-        return null;
-    }
+    public async Task<IActionResult> GetArticle(int id, int maxExpectedPrice = 200, CancellationToken cancellationToken = default) => 
+        Ok(await _mediator.Send(GetArticleQuery.CreateInstance(id, maxExpectedPrice), cancellationToken));
 
     [HttpPost]
-    public void BuyArticle(Article article, int buyerId)
-    {
-        if (article == null)
-        {
-            throw new Exception("Could not order article");
-        }
-
-        Logger.Debug($"Trying to sell article with id={article.Id}");
-
-        article.IsSold = true;
-        article.SoldDate = DateTime.Now;
-        article.BuyerUserId = buyerId;
-
-        try
-        {
-            _db.Save(article);
-            Logger.Info($"Article with id {article.Id} is sold.");
-        }
-        catch (ArgumentNullException)
-        {
-            Logger.Error($"Could not save article with id {article.Id}");
-            throw new Exception("Could not save article with id");
-        }
-        catch (Exception)
-        {
-            // ignored
-        }
-    }
+    public async Task<IActionResult> BuyArticle(Article article, int buyerId, CancellationToken cancellationToken) => 
+        Ok(await _mediator.Send(BuyArticleCommand.CreateInstance(article, buyerId), cancellationToken));
+    
 }
