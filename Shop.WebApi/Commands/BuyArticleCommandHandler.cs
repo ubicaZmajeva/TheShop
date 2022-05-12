@@ -1,5 +1,6 @@
 using MediatR;
 using Shop.WebApi.Services;
+using Shop.WebApi.Services.Repositories;
 
 namespace Shop.WebApi.Commands;
 

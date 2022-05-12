@@ -1,8 +1,8 @@
 ﻿using Shop.WebApi.Models;
 
-namespace Shop.WebApi.Services;
+namespace Shop.WebApi.Services.Repositories;
 
-public class Db: IRepository
+public class Repository: IRepository
 {
     private readonly List<Article> _articles = new();
 

@@ -1,6 +1,8 @@
 using MediatR;
 using Shop.WebApi.Models;
 using Shop.WebApi.Services;
+using Shop.WebApi.Services.ArticleProviders.Core;
+using Shop.WebApi.Services.Cache;
 
 namespace Shop.WebApi.Queries;
 

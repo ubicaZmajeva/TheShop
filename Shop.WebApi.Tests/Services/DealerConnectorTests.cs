@@ -6,6 +6,7 @@ using Moq;
 using Newtonsoft.Json;
 using Shop.WebApi.Models;
 using Shop.WebApi.Services;
+using Shop.WebApi.Services.ArticleProviders;
 using Xunit;
 
 namespace Shop.WebApi.Tests.Services;
