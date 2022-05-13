@@ -4,8 +4,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
-using Newtonsoft.Json;
-using Shop.WebApi.Models;
 using Shop.WebApi.Services.ArticleProviders;
 using Xunit;
 

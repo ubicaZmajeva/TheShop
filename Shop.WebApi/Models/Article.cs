@@ -1,5 +1,4 @@
-﻿using Shop.WebApi.Services.Repositories;
-using Shop.WebApi.Services.Repositories.Entities;
+﻿using Shop.WebApi.Services.Repositories.Entities;
 
 namespace Shop.WebApi.Models;
 

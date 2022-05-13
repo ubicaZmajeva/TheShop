@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Moq;
 using Shop.WebApi.Models;
 using Shop.WebApi.Queries;
-using Shop.WebApi.Services;
 using Shop.WebApi.Services.ArticleProviders.Core;
 using Shop.WebApi.Services.Cache;
 using Xunit;

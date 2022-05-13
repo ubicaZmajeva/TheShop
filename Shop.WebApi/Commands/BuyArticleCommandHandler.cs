@@ -1,5 +1,4 @@
 using MediatR;
-using Shop.WebApi.Models;
 using Shop.WebApi.Services.Repositories;
 using Shop.WebApi.Services.Repositories.Entities;
 

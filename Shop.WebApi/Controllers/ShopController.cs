@@ -21,7 +21,20 @@ public class ShopController : ControllerBase
         Ok(await _mediator.Send(GetArticleQuery.CreateInstance(id, maxExpectedPrice), cancellationToken));
     
     [HttpPost]
-    public async Task<IActionResult> BuyArticle(Article article, int buyerId, CancellationToken cancellationToken) => 
-        Ok(await _mediator.Send(BuyArticleCommand.CreateInstance(article, buyerId), cancellationToken));
-    
+    public async Task<IActionResult> BuyArticle(Article article, int buyerId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _mediator.Send(BuyArticleCommand.CreateInstance(article, buyerId), cancellationToken);
+            return Ok();
+        }
+        catch (ArgumentNullException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (ApplicationException ex)
+        {
+            return Conflict(ex.Message);
+        }
+    }
 }

@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddSingleton<IRepository<ArticleEntity>, Repository<ArticleEntity>>();
-builder.Services.AddSingleton<ICachedSupplier>(a => new CachedSupplier(new Repository<Article>()));
+builder.Services.AddSingleton<ICachedSupplier>(_ => new CachedSupplier(new Repository<Article>()));
 
 builder.Services.AddTransient<IArticleProvider, Warehouse>();
 builder.Services.AddHttpClient<IArticleProvider, DealerConnector>(m => m.BaseAddress = new Uri(builder.Configuration.GetValue<string>("Dealer1Url")));
