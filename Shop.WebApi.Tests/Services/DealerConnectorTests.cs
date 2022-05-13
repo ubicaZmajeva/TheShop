@@ -40,15 +40,11 @@ public class DealerConnectorTests
     public async Task GetArticle_ReturnsArticleReceivedFromOutside()
     {
         var mockHandler = new Mock<FakeHandler> { CallBase = true };
-        var article = new Article
-        {
-            Id = new Random().Next(1, int.MaxValue)
-        };
         mockHandler
             .Setup(handler => handler.Send())
             .Returns(new HttpResponseMessage
             {
-                Content = new StringContent(JsonConvert.SerializeObject(article))
+                Content = new StringContent("{\"ID\":123, \"Name_of_article\":\"Test\", \"ArticlePrice\":100}")
             });
         var httpClient = new HttpClient(mockHandler.Object)
         {
@@ -58,7 +54,7 @@ public class DealerConnectorTests
 
         var response = await sus.GetArticle(new Random().Next(1, int.MaxValue));
         
-        Assert.Equal(article.Id, response.Id);
+        Assert.Equal(123, response.Id);
     }
     
     [ExcludeFromCodeCoverage]

@@ -24,7 +24,7 @@ public class GetArticleQueryHandler : IRequestHandler<GetArticleQuery, Article>
         if (_cachedSupplier.ArticleInInventory(request.Id))
         {
             var article = _cachedSupplier.GetArticle(request.Id);
-            if (request.MaxExpectedPrice >= article.ArticlePrice)
+            if (article == null || request.MaxExpectedPrice >= article.ArticlePrice)
             {
                 return article;
             }
@@ -36,7 +36,7 @@ public class GetArticleQueryHandler : IRequestHandler<GetArticleQuery, Article>
                 continue;
             
             var article = await articleProvider.GetArticle(request.Id);
-            if (request.MaxExpectedPrice < article.ArticlePrice) 
+            if (article == null || request.MaxExpectedPrice < article.ArticlePrice) 
                 continue;
             
             _cachedSupplier.SetArticle(article);

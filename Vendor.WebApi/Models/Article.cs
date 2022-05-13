@@ -6,9 +6,9 @@ public class Article
 {
     [JsonPropertyName("ID")]
     public int Id { get; set; }
-    
-    [JsonPropertyName("Name_of_article")]
-    public string NameOfArticle { get; set; }
+
+    [JsonPropertyName("Name_of_article")] 
+    public string NameOfArticle { get; set; } = string.Empty;
     
     public int ArticlePrice { get; set; }
     
