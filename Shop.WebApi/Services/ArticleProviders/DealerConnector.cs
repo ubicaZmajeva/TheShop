@@ -7,10 +7,12 @@ namespace Shop.WebApi.Services.ArticleProviders;
 public class DealerConnector: IArticleProvider
 {
     private readonly HttpClient _httpClient;
+    private readonly ILogger<DealerConnector> _logger;
 
-    public DealerConnector(HttpClient httpClient)
+    public DealerConnector(HttpClient httpClient, ILogger<DealerConnector> logger)
     {
         _httpClient = httpClient;
+        _logger = logger;
     }
 
     public async Task<bool> ArticleInInventory(int id) => await Get<bool>($"/Supplier/ArticleInInventory/{id}");
@@ -20,12 +22,18 @@ public class DealerConnector: IArticleProvider
         var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
 
         if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("Something is wrong with VendorAPI: {BaseUrl}, {Url}", _httpClient.BaseAddress, url);
             return default;
+        }
         
         var responseContent = await response.Content.ReadAsStringAsync();
 
         if (string.IsNullOrWhiteSpace(responseContent))
+        {
+            _logger.LogError("VendorAPI successfully returned response, but response is blank: {BaseUrl}, {Url}", _httpClient.BaseAddress, url);
             return default;
+        }
 
         try
         {
@@ -34,6 +42,7 @@ public class DealerConnector: IArticleProvider
         }
         catch (Exception)
         {
+            _logger.LogError("VendorAPI returned response which cannot be deserialized: {BaseUrl}, {Url}", _httpClient.BaseAddress, url);
             return default;
         }
     }

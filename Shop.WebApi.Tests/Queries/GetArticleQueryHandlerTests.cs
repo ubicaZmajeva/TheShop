@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Shop.WebApi.Models;
 using Shop.WebApi.Queries;
@@ -15,6 +16,7 @@ public class GetArticleQueryHandlerTests {
     private readonly Mock<IArticleProvider> _mockWarehouse = new ();
     private readonly Mock<IArticleProvider> _mockDealer1 = new ();
     private readonly Mock<IArticleProvider> _mockDealer2 = new ();
+    private readonly Mock<ILogger<GetArticleQueryHandler>> _mockLogger = new ();
     
     [Fact]
     public async Task Handle_IfArticleExistsInCacheUseItIfPriceIsRight()
@@ -33,8 +35,9 @@ public class GetArticleQueryHandlerTests {
             {
                 _mockWarehouse.Object,
                 _mockDealer1.Object,
-                _mockDealer2.Object 
-            }
+                _mockDealer2.Object
+            },
+            _mockLogger.Object
         );
         
         var result = await sus.Handle(GetArticleQuery.CreateInstance(0, 200), CancellationToken.None);
@@ -61,7 +64,8 @@ public class GetArticleQueryHandlerTests {
                 _mockWarehouse.Object,
                 _mockDealer1.Object,
                 _mockDealer2.Object 
-            }
+            },
+            _mockLogger.Object
         );
         
         await sus.Handle(GetArticleQuery.CreateInstance(0, 200), CancellationToken.None);
@@ -80,7 +84,8 @@ public class GetArticleQueryHandlerTests {
                 _mockWarehouse.Object,
                 _mockDealer1.Object,
                 _mockDealer2.Object 
-            }
+            },
+            _mockLogger.Object
         );
         
         await sus.Handle(GetArticleQuery.CreateInstance(0, 200), CancellationToken.None);
@@ -106,7 +111,8 @@ public class GetArticleQueryHandlerTests {
                 _mockWarehouse.Object,
                 _mockDealer1.Object,
                 _mockDealer2.Object 
-            }
+            },
+            _mockLogger.Object
         );
         
         var result = await sus.Handle(GetArticleQuery.CreateInstance(0, 200), CancellationToken.None);
@@ -128,7 +134,8 @@ public class GetArticleQueryHandlerTests {
                 _mockWarehouse.Object,
                 _mockDealer1.Object,
                 _mockDealer2.Object 
-            }
+            },
+            _mockLogger.Object
         );
         
         await sus.Handle(GetArticleQuery.CreateInstance(0, 200), CancellationToken.None);
@@ -149,7 +156,8 @@ public class GetArticleQueryHandlerTests {
                 _mockWarehouse.Object,
                 _mockDealer1.Object,
                 _mockDealer2.Object 
-            }
+            },
+            _mockLogger.Object
         );
         
         await sus.Handle(GetArticleQuery.CreateInstance(0, 200), CancellationToken.None);
@@ -177,7 +185,8 @@ public class GetArticleQueryHandlerTests {
                 _mockWarehouse.Object,
                 _mockDealer1.Object,
                 _mockDealer2.Object 
-            }
+            },
+            _mockLogger.Object
         );
         
         var result = await sus.Handle(GetArticleQuery.CreateInstance(0, 200), CancellationToken.None);
@@ -206,7 +215,8 @@ public class GetArticleQueryHandlerTests {
                 _mockWarehouse.Object,
                 _mockDealer1.Object,
                 _mockDealer2.Object 
-            }
+            },
+            _mockLogger.Object
         );
         
         var result = await sus.Handle(GetArticleQuery.CreateInstance(0, 200), CancellationToken.None);
@@ -228,7 +238,8 @@ public class GetArticleQueryHandlerTests {
                 _mockWarehouse.Object,
                 _mockDealer1.Object,
                 _mockDealer2.Object 
-            }
+            },
+            _mockLogger.Object
         );
         
         var result = await sus.Handle(GetArticleQuery.CreateInstance(0, 200), CancellationToken.None);

@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Shop.WebApi.Services.ArticleProviders;
 using Xunit;
@@ -11,6 +12,7 @@ namespace Shop.WebApi.Tests.Services;
 
 public class DealerConnectorTests
 {
+    private Mock<ILogger<DealerConnector>> mockLogger = new();
 
     [Theory]
     [InlineData("true", true)]
@@ -28,7 +30,7 @@ public class DealerConnectorTests
         {
             BaseAddress = new Uri("http://localhost")
         };
-        var sus = new DealerConnector(httpClient);
+        var sus = new DealerConnector(httpClient, mockLogger.Object);
 
         var response = await sus.ArticleInInventory(new Random().Next(1, int.MaxValue));
         Assert.Equal(expectedResponse, response);
@@ -48,7 +50,7 @@ public class DealerConnectorTests
         {
             BaseAddress = new Uri("http://localhost")
         };
-        var sus = new DealerConnector(httpClient);
+        var sus = new DealerConnector(httpClient, mockLogger.Object);
 
         var response = await sus.GetArticle(new Random().Next(1, int.MaxValue));
         
