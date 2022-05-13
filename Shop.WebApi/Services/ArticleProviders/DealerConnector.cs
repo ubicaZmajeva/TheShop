@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Shop.WebApi.Models;
 using Shop.WebApi.Services.ArticleProviders.Core;
 

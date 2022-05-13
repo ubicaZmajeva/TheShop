@@ -5,6 +5,7 @@ using Shop.WebApi.Services.ArticleProviders;
 using Shop.WebApi.Services.ArticleProviders.Core;
 using Shop.WebApi.Services.Cache;
 using Shop.WebApi.Services.Repositories;
+using Shop.WebApi.Services.Repositories.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 

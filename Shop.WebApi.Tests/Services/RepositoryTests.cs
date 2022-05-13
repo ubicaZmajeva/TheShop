@@ -1,6 +1,7 @@
 using System;
 using Shop.WebApi.Models;
 using Shop.WebApi.Services.Repositories;
+using Shop.WebApi.Services.Repositories.Entities;
 using Xunit;
 
 namespace Shop.WebApi.Tests.Services;

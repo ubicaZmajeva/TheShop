@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using Shop.WebApi.Models;
+using Shop.WebApi.Services.Repositories.Entities;
 
 namespace Shop.WebApi.Services.Repositories;
 

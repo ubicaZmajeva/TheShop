@@ -1,6 +1,7 @@
 using MediatR;
 using Shop.WebApi.Models;
 using Shop.WebApi.Services.Repositories;
+using Shop.WebApi.Services.Repositories.Entities;
 
 namespace Shop.WebApi.Commands;
 
@@ -21,7 +22,7 @@ public class BuyArticleCommandHandler : IRequestHandler<BuyArticleCommand>
         
         _logger.LogDebug("Trying to sell article with id {ArticleId}", request.Article.Id);
 
-        var articleEntity = new ArticleEntity()
+        var articleEntity = new ArticleEntity
         {
             Id = request.Article.Id,
             Name = request.Article.NameOfArticle,

@@ -1,4 +1,4 @@
-namespace Shop.WebApi.Models;
+namespace Shop.WebApi.Services.Repositories.Entities;
 
 public class ArticleEntity: IHaveId
 {
