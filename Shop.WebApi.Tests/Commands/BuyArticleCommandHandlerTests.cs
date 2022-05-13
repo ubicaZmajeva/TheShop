@@ -15,7 +15,7 @@ public class BuyArticleCommandHandlerTests
     [Fact]
     public async Task Handle_ArticleNotProvided_ThrowsArgumentException()
     {
-        var mockRepository = new Mock<IRepository>();
+        var mockRepository = new Mock<IRepository<ArticleEntity>>();
         var mockLogger = new Mock<ILogger<BuyArticleCommandHandler>>();
         var sus = new BuyArticleCommandHandler(mockRepository.Object, mockLogger.Object);
 
@@ -25,11 +25,11 @@ public class BuyArticleCommandHandlerTests
     [Fact]
     public async Task Handle_ValidArticleIsProvided()
     {
-        var mockRepository = new Mock<IRepository>();
+        var mockRepository = new Mock<IRepository<ArticleEntity>>();
 
-        Article? savedArticle = null;
-        mockRepository.Setup(c => c.Save(It.IsAny<Article>()))
-            .Callback<Article>(article => savedArticle = article);
+        ArticleEntity? savedArticle = null;
+        mockRepository.Setup(c => c.Save(It.IsAny<ArticleEntity>()))
+            .Callback<ArticleEntity>(article => savedArticle = article);
             
         var mockLogger = new Mock<ILogger<BuyArticleCommandHandler>>();
         var sus = new BuyArticleCommandHandler(mockRepository.Object, mockLogger.Object);
@@ -45,10 +45,10 @@ public class BuyArticleCommandHandlerTests
 
         await sus.Handle(command, CancellationToken.None);
         
-        mockRepository.Verify(m => m.Save(It.IsAny<Article>()), Times.Once);
+        mockRepository.Verify(m => m.Save(It.IsAny<ArticleEntity>()), Times.Once);
         Assert.Equal(command.Article.Id, savedArticle?.Id);
-        Assert.Equal(command.Article.NameOfArticle, savedArticle?.NameOfArticle);
-        Assert.Equal(command.Article.ArticlePrice, savedArticle?.ArticlePrice);
+        Assert.Equal(command.Article.NameOfArticle, savedArticle?.Name);
+        Assert.Equal(command.Article.ArticlePrice, savedArticle?.Price);
         Assert.True(savedArticle?.IsSold);
         Assert.Equal(command.BuyerId, savedArticle?.BuyerUserId);
         Assert.NotNull(savedArticle?.SoldDate);
@@ -57,9 +57,9 @@ public class BuyArticleCommandHandlerTests
     [Fact]
     public async Task Handle_RepositoryCannotSaveArticle_ThrowsApplicationException()
     {
-        var mockRepository = new Mock<IRepository>();
+        var mockRepository = new Mock<IRepository<ArticleEntity>>();
 
-        mockRepository.Setup(c => c.Save(It.IsAny<Article>()))
+        mockRepository.Setup(c => c.Save(It.IsAny<ArticleEntity>()))
             .Throws<ApplicationException>();
             
         var mockLogger = new Mock<ILogger<BuyArticleCommandHandler>>();

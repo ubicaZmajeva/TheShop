@@ -10,7 +10,7 @@ public class RepositoryTests
     [Fact]
     public void GetById_ReturnNullIfArticleIsNotFound()
     {
-        var sus = new Repository();
+        var sus = new Repository<ArticleEntity>();
         var result = sus.GetById(new Random().Next(0, Int32.MaxValue));
         Assert.Null(result);
     }
@@ -18,32 +18,32 @@ public class RepositoryTests
     [Fact]
     public void GetById_SaveArticleAndFetchItAgain()
     {
-        var article = new Article()
+        var articleEntity = new ArticleEntity()
         {
             Id = new Random().Next(1, Int32.MaxValue),
-            NameOfArticle = Guid.NewGuid().ToString("N")
+            Name = Guid.NewGuid().ToString("N")
         };
-        var sus = new Repository();
+        var sus = new Repository<ArticleEntity>();
 
-        sus.Save(article);
-        var result = sus.GetById(article.Id);
+        sus.Save(articleEntity);
+        var result = sus.GetById(articleEntity.Id);
         
         Assert.NotNull(result);
-        Assert.Equal(article.Id, result.Id);
-        Assert.Equal(article.NameOfArticle, result.NameOfArticle);
+        Assert.Equal(articleEntity.Id, result.Id);
+        Assert.Equal(articleEntity.Name, result.Name);
     }
     
     [Fact]
     public void Save_EntityWithSameIdAlreadyExists_ThrowsException()
     {
-        var article = new Article
+        var articleEntity = new ArticleEntity
         {
             Id = new Random().Next(1, Int32.MaxValue),
-            NameOfArticle = Guid.NewGuid().ToString("N")
+            Name = Guid.NewGuid().ToString("N")
         };
-        var sus = new Repository();
+        var sus = new Repository<ArticleEntity>();
 
-        sus.Save(article);
-        Assert.Throws<ApplicationException>(() => sus.Save(article));
+        sus.Save(articleEntity);
+        Assert.Throws<ApplicationException>(() => sus.Save(articleEntity));
     }
 }

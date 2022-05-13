@@ -12,7 +12,7 @@ public class CachedSupplierTests
     [Fact]
     public void ArticleInInventory_IfInnerRepositoryDoesNotContainItemReturnFalse()
     {
-        var mockRepository = new Mock<IRepository>();
+        var mockRepository = new Mock<IRepository<Article>>();
 
         mockRepository.Setup(m => m.GetById(It.IsAny<int>())).Returns(() => null!);
         var sus = new CachedSupplier(mockRepository.Object);
@@ -25,7 +25,7 @@ public class CachedSupplierTests
     [Fact]
     public void ArticleInInventory_IfInnerRepositoryContainItemReturnTrue()
     {
-        var mockRepository = new Mock<IRepository>();
+        var mockRepository = new Mock<IRepository<Article>>();
 
         mockRepository.Setup(m => m.GetById(It.IsAny<int>())).Returns(() => new Article());
         var sus = new CachedSupplier(mockRepository.Object);
@@ -45,7 +45,7 @@ public class CachedSupplierTests
             NameOfArticle = Guid.NewGuid().ToString("N")
         };
         
-        var sus = new CachedSupplier(new Repository());
+        var sus = new CachedSupplier(new Repository<Article>());
 
         sus.SetArticle(article);
         var result = sus.GetArticle(article.Id);

@@ -5,8 +5,8 @@ namespace Shop.WebApi.Services.Cache;
 
 public class CachedSupplier: ICachedSupplier
 {
-    private readonly IRepository _repository;
-    public CachedSupplier(IRepository repository)
+    private readonly IRepository<Article> _repository;
+    public CachedSupplier(IRepository<Article> repository)
     {
         _repository = repository;
     }

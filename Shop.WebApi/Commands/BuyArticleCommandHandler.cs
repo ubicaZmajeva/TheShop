@@ -1,14 +1,15 @@
 using MediatR;
+using Shop.WebApi.Models;
 using Shop.WebApi.Services.Repositories;
 
 namespace Shop.WebApi.Commands;
 
 public class BuyArticleCommandHandler : IRequestHandler<BuyArticleCommand>
 {
-    private readonly IRepository _db;
+    private readonly IRepository<ArticleEntity> _db;
     private readonly ILogger _logger;
 
-    public BuyArticleCommandHandler(IRepository db, ILogger<BuyArticleCommandHandler> logger)
+    public BuyArticleCommandHandler(IRepository<ArticleEntity> db, ILogger<BuyArticleCommandHandler> logger)
     {
         _db = db;
         _logger = logger;
@@ -19,13 +20,20 @@ public class BuyArticleCommandHandler : IRequestHandler<BuyArticleCommand>
         if (request.Article == null) throw new ArgumentNullException(nameof(request.Article), "Article is not provided");
         
         _logger.LogDebug("Trying to sell article with id {ArticleId}", request.Article.Id);
-        request.Article.IsSold = true;
-        request.Article.SoldDate = DateTime.Now;
-        request.Article.BuyerUserId = request.BuyerId;
+
+        var articleEntity = new ArticleEntity()
+        {
+            Id = request.Article.Id,
+            Name = request.Article.NameOfArticle,
+            Price = request.Article.ArticlePrice,
+            IsSold = true,
+            SoldDate = DateTime.Now,
+            BuyerUserId = request.BuyerId
+        };
         
         try
         {
-            _db.Save(request.Article);
+            _db.Save(articleEntity);
             _logger.LogInformation("Article with id {ArticleId} is sold", request.Article.Id);
         }
         catch (ApplicationException ex)

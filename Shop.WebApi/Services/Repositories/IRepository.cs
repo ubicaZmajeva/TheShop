@@ -1,9 +1,7 @@
-using Shop.WebApi.Models;
-
 namespace Shop.WebApi.Services.Repositories;
 
-public interface IRepository
+public interface IRepository<T>
 {
-    Article GetById(int id);
-    Article Save(Article article);
+    T GetById(int id);
+    T Save(T article);
 }
